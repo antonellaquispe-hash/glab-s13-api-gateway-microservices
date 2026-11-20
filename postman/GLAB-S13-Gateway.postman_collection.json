@@ -92,8 +92,9 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('La ruta categorías se enruta y responde con 2xx', function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
-              "pm.test('Respuesta dentro de 5 segundos', function () { pm.expect(pm.response.responseTime).to.be.below(5000); });"
+              "pm.test('La ruta responde HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Respuesta JSON contiene registros', function () { const data = pm.response.json(); pm.expect(data).to.be.an('array').that.is.not.empty; });",
+              "pm.test('Tiempo de respuesta menor a 5 segundos', function () { pm.expect(pm.response.responseTime).to.be.below(5000); });"
             ]
           }
         }
@@ -126,8 +127,9 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('La ruta productos se enruta y responde con 2xx', function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
-              "pm.test('Respuesta dentro de 5 segundos', function () { pm.expect(pm.response.responseTime).to.be.below(5000); });"
+              "pm.test('La ruta responde HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Respuesta JSON contiene registros', function () { const data = pm.response.json(); pm.expect(data).to.be.an('array').that.is.not.empty; });",
+              "pm.test('Tiempo de respuesta menor a 5 segundos', function () { pm.expect(pm.response.responseTime).to.be.below(5000); });"
             ]
           }
         }
@@ -160,8 +162,9 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('La ruta clientes se enruta y responde con 2xx', function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
-              "pm.test('Respuesta dentro de 5 segundos', function () { pm.expect(pm.response.responseTime).to.be.below(5000); });"
+              "pm.test('La ruta responde HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Respuesta JSON contiene registros', function () { const data = pm.response.json(); pm.expect(data).to.be.an('array').that.is.not.empty; });",
+              "pm.test('Tiempo de respuesta menor a 5 segundos', function () { pm.expect(pm.response.responseTime).to.be.below(5000); });"
             ]
           }
         }
@@ -194,8 +197,9 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('La ruta pedidos se enruta y responde con 2xx', function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
-              "pm.test('Respuesta dentro de 5 segundos', function () { pm.expect(pm.response.responseTime).to.be.below(5000); });"
+              "pm.test('La ruta responde HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Respuesta JSON contiene registros', function () { const data = pm.response.json(); pm.expect(data).to.be.an('array').that.is.not.empty; });",
+              "pm.test('Tiempo de respuesta menor a 5 segundos', function () { pm.expect(pm.response.responseTime).to.be.below(5000); });"
             ]
           }
         }

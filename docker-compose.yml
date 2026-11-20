@@ -1,0 +1,67 @@
+services:
+  eureka-server:
+    build:
+      context: .
+      args:
+        MODULE: eureka-server
+    ports:
+      - "8761:8761"
+  categoria-service:
+    build:
+      context: .
+      args:
+        MODULE: categoria-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    ports:
+      - "8081:8081"
+  producto-service:
+    build:
+      context: .
+      args:
+        MODULE: producto-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    ports:
+      - "8082:8082"
+  cliente-service:
+    build:
+      context: .
+      args:
+        MODULE: cliente-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    ports:
+      - "8083:8083"
+  pedido-service:
+    build:
+      context: .
+      args:
+        MODULE: pedido-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    ports:
+      - "8084:8084"
+  gateway-service:
+    build:
+      context: .
+      args:
+        MODULE: gateway-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - categoria-service
+      - producto-service
+      - cliente-service
+      - pedido-service
+    ports:
+      - "8080:8080"

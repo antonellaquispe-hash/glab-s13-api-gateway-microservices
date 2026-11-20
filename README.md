@@ -1,48 +1,62 @@
-# Laboratorio S13: API Gateway en microservicios
+# Laboratorio S13: API Gateway y microservicios
 
-Implementación del laboratorio de Spring Cloud Gateway y Eureka. El Gateway funciona como entrada única y publica las rutas de categorías, productos, clientes y pedidos.
+Repositorio ejecutable para el laboratorio de Service Discovery y API Gateway. Incluye Eureka Server, los cuatro servicios de negocio y Spring Cloud Gateway. Las respuestas de los servicios son datos de muestra en memoria.
+
+## Servicios del repositorio
+
+| Servicio | Puerto | Ruta directa | Ruta desde Gateway |
+|---|---:|---|---|
+| Eureka Server | 8761 | `/` | — |
+| Gateway | 8080 | `/actuator/health` | — |
+| Categorías | 8081 | `/api/categorias` | `http://localhost:8080/api/categorias` |
+| Productos | 8082 | `/api/productos` | `http://localhost:8080/api/productos` |
+| Clientes | 8083 | `/api/clientes` | `http://localhost:8080/api/clientes` |
+| Pedidos | 8084 | `/api/pedidos` | `http://localhost:8080/api/pedidos` |
 
 ## Requisitos
 
 - Java 17 o superior
-- Maven 3.9+
-- Eureka Server disponible en `http://localhost:8761/eureka`
-- Los cuatro microservicios registrados con los nombres `categoria-service`, `producto-service`, `cliente-service` y `pedido-service`
+- Maven 3.9+ (para ejecutar desde IDE o consola), o Docker Compose
 
-## Ejecutar
+## Ejecutar con Docker Compose
 
-1. Inicia Eureka y los microservicios previos de categorías y productos.
-2. Inicia `cliente-service` y `pedido-service` (la actividad del documento).
-3. En esta carpeta ejecuta `mvn spring-boot:run`.
-4. Comprueba el registro en Eureka y prueba el puerto 8080.
+Desde la raíz del repositorio:
 
-El Gateway no implementa la lógica de negocio de los servicios previos. Las respuestas de las rutas requieren que esos servicios estén levantados y registrados en Eureka.
+```powershell
+docker compose up --build
+```
 
-## Rutas
+Espera que los seis contenedores inicien. Eureka se abre en `http://localhost:8761`; los servicios aparecerán registrados por su nombre. Detén el entorno con `Ctrl+C` y `docker compose down`.
 
-| Servicio | Ruta pública | Destino Eureka |
-|---|---|---|
-| Categorías | `/api/categorias/**` | `lb://categoria-service` |
-| Productos | `/api/productos/**` | `lb://producto-service` |
-| Clientes | `/api/clientes/**` | `lb://cliente-service` |
-| Pedidos | `/api/pedidos/**` | `lb://pedido-service` |
+## Ejecutar con Maven
 
-Se habilita también el descubrimiento automático (`/{serviceId}/**`). En las rutas explícitas no se reescriben prefijos para conservar el contrato esperado por cada servicio.
+Abre seis terminales en la raíz y ejecuta, en este orden:
+
+```powershell
+mvn -pl eureka-server spring-boot:run
+mvn -pl categoria-service spring-boot:run
+mvn -pl producto-service spring-boot:run
+mvn -pl cliente-service spring-boot:run
+mvn -pl pedido-service spring-boot:run
+mvn -pl gateway-service spring-boot:run
+```
+
+Verifica en `http://localhost:8761` que estén registrados `GATEWAY-SERVICE`, `CATEGORIA-SERVICE`, `PRODUCTO-SERVICE`, `CLIENTE-SERVICE` y `PEDIDO-SERVICE`.
 
 ## Pruebas Postman
 
-Importa `postman/GLAB-S13-Gateway.postman_collection.json` y opcionalmente `postman/GLAB-S13-local.postman_environment.json`. Ejecuta las cuatro peticiones con los servicios registrados. Cada petición verifica el estado HTTP, que la respuesta no sea 5xx y el tiempo de respuesta. Como los contratos y datos de los servicios previos no fueron incluidos en el material recibido, las pruebas no presuponen cuerpos ni códigos de creación específicos.
+Importa `postman/GLAB-S13-Gateway.postman_collection.json` y `postman/GLAB-S13-local.postman_environment.json`. Selecciona el entorno local y ejecuta la colección. Incluye chequeos de salud, rutas declaradas en Actuator y respuesta 2xx para los cuatro servicios pasando por el Gateway. También puedes consultar cada servicio directamente por su puerto para comparar la respuesta.
 
-Actuator expone `/actuator/health` y `/actuator/gateway/routes` para verificar estado y rutas configuradas.
+Los datos son ejemplos en memoria: se reinician al reiniciar cada servicio. No se requiere una base de datos para probar el enrutamiento.
 
 ## Conclusiones
 
-1. El API Gateway concentra el acceso a varios servicios detrás de un punto de entrada.
-2. Eureka permite ubicar instancias por nombre lógico, evitando fijar sus direcciones en las rutas.
-3. Spring Cloud LoadBalancer resuelve `lb://` y permite distribuir llamadas entre instancias registradas.
-4. Mantener rutas explícitas facilita identificar y administrar qué API expone cada microservicio.
-5. El Gateway simplifica la integración del cliente; la disponibilidad final depende de que Eureka y los servicios destino estén activos.
+1. El Gateway concentra el acceso a varios servicios detrás de un punto de entrada.
+2. Eureka permite ubicar instancias por nombre lógico, sin fijar sus direcciones en las rutas.
+3. Spring Cloud LoadBalancer resuelve los destinos `lb://` y puede distribuir llamadas entre instancias registradas.
+4. Las rutas explícitas muestran con claridad qué API expone cada microservicio.
+5. La disponibilidad de cada ruta depende de que Eureka y el servicio destino estén activos y registrados.
 
-## Nota de versiones
+## Versiones
 
-El documento menciona Spring Boot 3.5.15 en los metadatos y Spring Boot 3.5.3 en el `pom.xml` de ejemplo. Este proyecto usa Boot 3.5.15 con Spring Cloud 2025.0.3, que corresponde a la línea Boot 3.5. El proyecto conserva Java 17 solicitado en la guía.
+El documento menciona Spring Boot 3.5.15 en los metadatos y 3.5.3 en el POM de ejemplo. Este proyecto usa Spring Boot 3.5.15, Spring Cloud 2025.0.3 y Java 17.
